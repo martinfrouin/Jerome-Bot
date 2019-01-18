@@ -29,7 +29,6 @@ app.get("/webhook", function(req, res) {
 
 function handleMessage(sender_psid, received_message) {
   // Sends the response message
-  console.log("message envoyé", received_message.text);
   callSendAPI(sender_psid, received_message.text);
 }
 
@@ -44,6 +43,8 @@ function callSendAPI(sender_psid, response) {
     },
     message: response
   };
+
+  console.log("message a envoyer a", sender_psid, response);
 
   // Send the HTTP request to the Messenger Platform
   request(
