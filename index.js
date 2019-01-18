@@ -26,6 +26,7 @@ app.get("/webhook", function(req, res) {
 
 function handleMessage(sender_psid, received_message) {
   // Sends the response message
+  console.log("message envoyé", received_message.text);
   callSendAPI(sender_psid, received_message.text);
 }
 
