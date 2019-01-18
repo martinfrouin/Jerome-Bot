@@ -2,6 +2,9 @@ var express = require("express");
 var request = require("request");
 var bodyParser = require("body-parser");
 
+const ACCESS_TOKEN =
+  "EAAijOCZBrbOoBAHyAickzZCTwGSeWzC2gn4UCsqrRriQZBODTTEdFSKBa4sLie8w4zJolv1XTltPx1H18P2DDRkzvhzFHpLKgbIgrWc1coi4gotZCVGe1cWShMeZBnffDxr7MnchmTZCX7rFwG0dpGcisgxD2du4bEGi3aL0DM9AZDZD";
+
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -15,7 +18,7 @@ app.get("/", function(req, res) {
 // Facebook Webhook
 // Used for verification
 app.get("/webhook", function(req, res) {
-  if (req.query["hub.verify_token"] === process.env.PAGE_ACCESS_TOKEN) {
+  if (req.query["hub.verify_token"] === process.env.ACCESS_TOKEN) {
     console.log("Verified webhook");
     res.status(200).send(req.query["hub.challenge"]);
   } else {
@@ -46,7 +49,7 @@ function callSendAPI(sender_psid, response) {
   request(
     {
       uri: "https://graph.facebook.com/v2.6/me/messages",
-      qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+      qs: { access_token: ACCESS_TOKEN },
       method: "POST",
       json: request_body
     },
