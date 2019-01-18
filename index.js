@@ -18,7 +18,8 @@ app.get("/", function(req, res) {
 // Facebook Webhook
 // Used for verification
 app.get("/webhook", function(req, res) {
-  if (req.query["hub.verify_token"] === process.env.ACCESS_TOKEN) {
+  // if (req.query["hub.verify_token"] === process.env.ACCESS_TOKEN) {
+  if (req.query["hub.verify_token"] === process.env.PAGE_ACCESS_TOKEN) {
     console.log("Verified webhook");
     res.status(200).send(req.query["hub.challenge"]);
   } else {
@@ -44,13 +45,11 @@ function callSendAPI(sender_psid, response) {
     message: response
   };
 
-  console.log("message a envoyer a", sender_psid, response);
-
   // Send the HTTP request to the Messenger Platform
   request(
     {
       uri: "https://graph.facebook.com/v2.6/me/messages",
-      qs: { access_token: ACCESS_TOKEN },
+      qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
       method: "POST",
       json: request_body
     },
