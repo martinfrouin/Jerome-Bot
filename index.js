@@ -6,7 +6,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 console.log(process.env.VERIFY_TOKEN, process.env.PAGE_ACCESS_TOKEN);
-const weekEnd = ["weekEnd", "WE", "Week End", "Week-End"];
+const weekEnd = [
+  "weekEnd",
+  "WE",
+  "Week End",
+  "Week-End",
+  "weekend",
+  "week-end",
+  "Week end",
+  "Weekend"
+];
 
 const server = app.listen(process.env.PORT || 5000, () => {
   console.log(
@@ -15,6 +24,22 @@ const server = app.listen(process.env.PORT || 5000, () => {
     app.settings.env
   );
 });
+
+function getNextFriday() {
+  const dayINeed = 5; // for Friday
+  const today = moment().isoWeekday();
+
+  // if we haven't yet passed the day of the week that I need:
+  if (today <= dayINeed) {
+    // then just give me this week's instance of that day
+    return moment().isoWeekday(dayINeed);
+  } else {
+    // otherwise, give me *next week's* instance of that same day
+    return moment()
+      .add(1, "weeks")
+      .isoWeekday(dayINeed);
+  }
+}
 
 /* For Facebook Validation */
 app.get("/webhook", (req, res) => {
@@ -36,7 +61,10 @@ app.post("/webhook", (req, res) => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
           if (weekEnd.indexOf(event.message.text) !== -1) {
-            sendMessage(event.sender.id, "Tu as dis weekend ?");
+            sendMessage(
+              event.sender.id,
+              `C'est dans ${this.getNextFriday()} jours`
+            );
           } else {
             sendMessage(event.sender.id, "Pas compris");
           }
