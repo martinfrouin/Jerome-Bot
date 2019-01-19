@@ -35,7 +35,7 @@ app.post("/webhook", (req, res) => {
     req.body.entry.forEach(entry => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
-          if (event.message.text.indexOf(weekEnd) !== -1) {
+          if (weekEnd.indexOf(event.message.text) !== -1) {
             sendMessage(event.sender.id, "Tu as dis weekend ?");
           } else {
             sendMessage(event.sender.id, "Pas compris");
