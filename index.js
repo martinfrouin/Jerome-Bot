@@ -61,10 +61,7 @@ app.post("/webhook", (req, res) => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
           if (weekEnd.indexOf(event.message.text) !== -1) {
-            sendMessage(
-              event.sender.id,
-              `C'est dans ${this.getNextFriday()} jours`
-            );
+            sendMessage(event.sender.id, `C'est dans ${getNextFriday()} jours`);
           } else {
             sendMessage(event.sender.id, "Pas compris");
           }
