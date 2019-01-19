@@ -2,13 +2,12 @@ var express = require("express");
 var request = require("request");
 var bodyParser = require("body-parser");
 
-const ACCESS_TOKEN =
-  "EAAijOCZBrbOoBAHyAickzZCTwGSeWzC2gn4UCsqrRriQZBODTTEdFSKBa4sLie8w4zJolv1XTltPx1H18P2DDRkzvhzFHpLKgbIgrWc1coi4gotZCVGe1cWShMeZBnffDxr7MnchmTZCX7rFwG0dpGcisgxD2du4bEGi3aL0DM9AZDZD";
-
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.listen(process.env.PORT || 5000);
+
+console.log(process.env.VERIFY_TOKEN, process.env.PAGE_ACCESS_TOKEN);
 
 // Server index page
 app.get("/", function(req, res) {
