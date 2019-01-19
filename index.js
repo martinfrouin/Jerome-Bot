@@ -34,7 +34,12 @@ app.post("/webhook", (req, res) => {
     req.body.entry.forEach(entry => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
-          sendMessage(event);
+          if (event.message.text.search(/WE/week-end/weekend/WeekEnd/gi)) {
+            sendMessage(event.sender.id, "Tu as dis weekend ?");
+
+          } else {
+            sendMessage(event.sender.id, "Pas compris");
+          }
         }
       });
     });
@@ -42,9 +47,7 @@ app.post("/webhook", (req, res) => {
   }
 });
 
-function sendMessage(event) {
-  let sender = event.sender.id;
-  let text = event.message.text;
+function sendMessage(senderId, message) {
 
   request(
     {
@@ -52,8 +55,8 @@ function sendMessage(event) {
       qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
       method: "POST",
       json: {
-        recipient: { id: sender },
-        message: { text: text }
+        recipient: { id: senderId },
+        message: { text: message }
       }
     },
     function(error, response) {
