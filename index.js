@@ -1,96 +1,66 @@
-var express = require("express");
-var request = require("request");
-var bodyParser = require("body-parser");
-
-var app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
 app.use(bodyParser.json());
-app.listen(process.env.PORT || 5000);
+app.use(bodyParser.urlencoded({ extended: true }));
 
 console.log(process.env.VERIFY_TOKEN, process.env.PAGE_ACCESS_TOKEN);
 
-// Server index page
-app.get("/", function(req, res) {
-  res.send("Deployed!");
+const server = app.listen(process.env.PORT || 5000, () => {
+  console.log(
+    "Express server listening on port %d in %s mode",
+    server.address().port,
+    app.settings.env
+  );
 });
 
-// Facebook Webhook
-// Used for verification
-app.get("/webhook", function(req, res) {
-  // if (req.query["hub.verify_token"] === process.env.ACCESS_TOKEN) {
-  if (req.query["hub.verify_token"] === process.env.VERIFY_TOKEN) {
-    console.log("Verified webhook");
+/* For Facebook Validation */
+app.get("/webhook", (req, res) => {
+  if (
+    req.query["hub.mode"] &&
+    req.query["hub.verify_token"] === process.env.VERIFY_TOKEN
+  ) {
     res.status(200).send(req.query["hub.challenge"]);
   } else {
-    console.error("Verification failed. The tokens do not match.");
-    res.sendStatus(403);
+    res.status(403).end();
   }
 });
 
-function handleMessage(sender_psid, received_message) {
-  // Sends the response message
-  callSendAPI(sender_psid, received_message.text);
-}
+/* Handling all messenges */
+app.post("/webhook", (req, res) => {
+  console.log(req.body);
+  if (req.body.object === "page") {
+    req.body.entry.forEach(entry => {
+      entry.messaging.forEach(event => {
+        if (event.message && event.message.text) {
+          sendMessage(event);
+        }
+      });
+    });
+    res.status(200).end();
+  }
+});
 
-// Handles messaging_postbacks events
-// function handlePostback(sender_psid, received_postback) {}
+function sendMessage(event) {
+  let sender = event.sender.id;
+  let text = event.message.text;
 
-function callSendAPI(sender_psid, response) {
-  // Construct the message body
-  let request_body = {
-    recipient: {
-      id: sender_psid
-    },
-    message: response
-  };
-
-  // Send the HTTP request to the Messenger Platform
   request(
     {
-      uri: "https://graph.facebook.com/v2.6/me/messages",
+      url: "https://graph.facebook.com/v2.6/me/messages",
       qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
       method: "POST",
-      json: request_body
+      json: {
+        recipient: { id: sender },
+        message: { text: text }
+      }
     },
-    (err, res, body) => {
-      if (!err) {
-        console.log("message sent!");
-      } else {
-        console.error("Unable to send message:" + err);
+    function(error, response) {
+      if (error) {
+        console.log("Error sending message: ", error);
+      } else if (response.body.error) {
+        console.log("Error: ", response.body.error);
       }
     }
   );
 }
-
-app.post("/webhook", (req, res) => {
-  // Parse the request body from the POST
-  let body = req.body;
-
-  // Check the webhook event is from a Page subscription
-  if (body.object === "page") {
-    body.entry.forEach(function(entry) {
-      // Gets the body of the webhook event
-      let webhook_event = entry.messaging[0];
-      console.log(webhook_event);
-
-      // Get the sender PSID
-      let sender_psid = webhook_event.sender.id;
-      // console.log("Sender PSID: " + sender_psid);
-
-      // Check if the event is a message or postback and
-      // pass the event to the appropriate handler function
-      if (webhook_event.message) {
-        handleMessage(sender_psid, webhook_event.message);
-      }
-      // else if (webhook_event.postback) {
-      //   handlePostback(sender_psid, webhook_event.postback);
-      // }
-    });
-
-    // Return a '200 OK' response to all events
-    res.status(200).send("EVENT_RECEIVED");
-  } else {
-    // Return a '404 Not Found' if event is not from a page subscription
-    res.sendStatus(404);
-  }
-});
