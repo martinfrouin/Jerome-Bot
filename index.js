@@ -6,6 +6,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 console.log(process.env.VERIFY_TOKEN, process.env.PAGE_ACCESS_TOKEN);
+const weekEnd = ["weekEnd", "WE", "Week End", "Week-End"];
 
 const server = app.listen(process.env.PORT || 5000, () => {
   console.log(
@@ -34,9 +35,8 @@ app.post("/webhook", (req, res) => {
     req.body.entry.forEach(entry => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
-          if (event.message.text.search(/WE/week-end/weekend/WeekEnd/gi)) {
+          if (event.message.text.indexOf(weekEnd) !== -1) {
             sendMessage(event.sender.id, "Tu as dis weekend ?");
-
           } else {
             sendMessage(event.sender.id, "Pas compris");
           }
@@ -48,7 +48,6 @@ app.post("/webhook", (req, res) => {
 });
 
 function sendMessage(senderId, message) {
-
   request(
     {
       url: "https://graph.facebook.com/v2.6/me/messages",
