@@ -27,19 +27,7 @@ const server = app.listen(process.env.PORT || 5000, () => {
 });
 
 function getNextFriday() {
-  const dayINeed = 5; // for Friday
-  const today = moment().isoWeekday();
-
-  // if we haven't yet passed the day of the week that I need:
-  if (today <= dayINeed) {
-    // then just give me this week's instance of that day
-    return moment().isoWeekday(dayINeed);
-  } else {
-    // otherwise, give me *next week's* instance of that same day
-    return moment()
-      .add(1, "weeks")
-      .isoWeekday(dayINeed);
-  }
+  return moment.weekdays(5);
 }
 
 /* For Facebook Validation */
