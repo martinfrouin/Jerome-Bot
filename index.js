@@ -65,8 +65,9 @@ app.post("/webhook", (req, res) => {
   console.log(req.body);
   if (req.body.object === "page") {
     req.body.entry.forEach(entry => {
+      console.log("entry", entry);
       entry.messaging.forEach(event => {
-        console.log(event);
+        console.log("event", event);
         if (event.message && event.message.text) {
           if (new RegExp(weekEnd.join("|")).test(event.message.text)) {
             sendMessage(event.sender.id, `C'est dans ${getNextFriday()}`);
