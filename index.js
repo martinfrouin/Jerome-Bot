@@ -47,7 +47,7 @@ function getNextFriday() {
   const hours = deadline.subtract(days, "days").diff(now, "hours");
   const minutes = deadline.subtract(hours, "hours").diff(now, "minutes");
   return `${days !== 0 && `${days} jours,`} ${hours !== 0 &&
-    `${hours} heures,`} ${minutes && `${minutes} minutes`}`;
+    `${hours} heures et `} ${minutes && `${minutes} minutes`}`;
 }
 
 /* For Facebook Validation */
