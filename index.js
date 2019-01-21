@@ -15,6 +15,7 @@ const weekEnd = [
   "weekend",
   "week-end",
   "Week end",
+  "week end",
   "Weekend"
 ];
 
@@ -31,12 +32,9 @@ function getNextFriday() {
 
   var deadline;
 
-  // if we haven't yet passed the day of the week that I need:
   if (moment().isoWeekday() <= dayINeed) {
-    // then just give me this week's instance of that day
     deadline = moment().isoWeekday(dayINeed);
   } else {
-    // otherwise, give me next week's instance of that day
     deadline = moment()
       .add(1, "weeks")
       .isoWeekday(dayINeed);
@@ -47,7 +45,7 @@ function getNextFriday() {
   const hours = deadline.subtract(days, "days").diff(now, "hours");
   const minutes = deadline.subtract(hours, "hours").diff(now, "minutes");
   return `${days !== 0 && `${days} jours,`} ${hours !== 0 &&
-    `${hours} heures et `} ${minutes && `${minutes} minutes`}`;
+    `${hours} heures et`} ${minutes && `${minutes} minutes`}`;
 }
 
 /* For Facebook Validation */
@@ -68,6 +66,7 @@ app.post("/webhook", (req, res) => {
   if (req.body.object === "page") {
     req.body.entry.forEach(entry => {
       entry.messaging.forEach(event => {
+        console.log(event);
         if (event.message && event.message.text) {
           if (new RegExp(weekEnd.join("|")).test(event.message.text)) {
             sendMessage(event.sender.id, `C'est dans ${getNextFriday()}`);
