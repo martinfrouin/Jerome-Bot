@@ -46,7 +46,8 @@ function getNextFriday() {
   const days = deadline.diff(now, "days");
   const hours = deadline.subtract(days, "days").diff(now, "hours");
   const minutes = deadline.subtract(hours, "hours").diff(now, "minutes");
-  return `${days} days, ${hours} hours, and ${minutes} minutes`;
+  return `${days !== 0 && `${days} jours,`} ${hours !== 0 &&
+    `${hours} heures,`} ${minutes && `${minutes} minutes`}`;
 }
 
 /* For Facebook Validation */
@@ -68,10 +69,8 @@ app.post("/webhook", (req, res) => {
     req.body.entry.forEach(entry => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
-          if (weekEnd.indexOf(event.message.text) !== -1) {
+          if (new RegExp(weekEnd.join("|")).test(event.message.text)) {
             sendMessage(event.sender.id, `C'est dans ${getNextFriday()}`);
-          } else {
-            sendMessage(event.sender.id, "Pas compris");
           }
         }
       });
