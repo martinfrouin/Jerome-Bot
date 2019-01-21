@@ -27,7 +27,26 @@ const server = app.listen(process.env.PORT || 5000, () => {
 });
 
 function getNextFriday() {
-  return moment.weekdays(5);
+  var dayINeed = 5;
+
+  var deadline;
+
+  // if we haven't yet passed the day of the week that I need:
+  if (moment().isoWeekday() <= dayINeed) {
+    // then just give me this week's instance of that day
+    deadline = moment().isoWeekday(dayINeed);
+  } else {
+    // otherwise, give me next week's instance of that day
+    deadline = moment()
+      .add(1, "weeks")
+      .isoWeekday(dayINeed);
+  }
+  deadline.startOf("day").set({ h: 17 });
+  const now = moment();
+  const days = deadline.diff(now, "days");
+  const hours = deadline.subtract(days, "days").diff(now, "hours");
+  const minutes = deadline.subtract(hours, "hours").diff(now, "minutes");
+  return `${days} days, ${hours} hours, and ${minutes} minutes`;
 }
 
 /* For Facebook Validation */
@@ -50,7 +69,7 @@ app.post("/webhook", (req, res) => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
           if (weekEnd.indexOf(event.message.text) !== -1) {
-            sendMessage(event.sender.id, `C'est dans ${getNextFriday()} jours`);
+            sendMessage(event.sender.id, `C'est dans ${getNextFriday()}`);
           } else {
             sendMessage(event.sender.id, "Pas compris");
           }
