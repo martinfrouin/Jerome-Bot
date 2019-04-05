@@ -7,17 +7,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 console.log(process.env.VERIFY_TOKEN, process.env.PAGE_ACCESS_TOKEN);
-const weekEnd = [
-  "weekEnd",
-  "WE",
-  "Week End",
-  "Week-End",
-  "weekend",
-  "week-end",
-  "Week end",
-  "week end",
-  "Weekend"
-];
+const weekEnd = ["weekend", "we", "week end", "week-end"];
 
 const server = app.listen(process.env.PORT || 5000, () => {
   console.log(
@@ -48,7 +38,7 @@ function getNextFriday() {
   if (!hours) hours = 0;
   if (!minutes) minutes = 0;
 
-  return `C'est dans ${days ? `${days} jours,` : ""} ${
+  return `C'est dans ${days ? `${days} jours, ` : ""}${
     hours ? `${hours} heures et` : ""
   } ${`${minutes} minutes`}`;
 }
@@ -72,7 +62,9 @@ app.post("/webhook", (req, res) => {
     req.body.entry.forEach(entry => {
       entry.messaging.forEach(event => {
         if (event.message && event.message.text) {
-          if (new RegExp(weekEnd.join("|")).test(event.message.text)) {
+          if (
+            new RegExp(weekEnd.join("|")).test(event.message.text.toLowerCase())
+          ) {
             sendMessage(event.sender.id, getNextFriday());
           }
         }
