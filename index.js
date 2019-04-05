@@ -28,7 +28,7 @@ const server = app.listen(process.env.PORT || 5000, () => {
 });
 
 function getNextFriday() {
-  var dayINeed = 5;
+  var dayINeed = 4;
 
   var deadline;
 
@@ -41,10 +41,14 @@ function getNextFriday() {
   }
   deadline.startOf("day").set({ h: 17 });
   const now = moment();
-  const days = deadline.diff(now, "days");
-  const hours = deadline.subtract(days, "days").diff(now, "hours");
-  const minutes = deadline.subtract(hours, "hours").diff(now, "minutes");
-  return `${days !== 0 && `${days} jours,`} ${hours !== 0 &&
+  let days = deadline.diff(now, "days");
+  let hours = deadline.subtract(days, "days").diff(now, "hours");
+  let minutes = deadline.subtract(hours, "hours").diff(now, "minutes");
+  if (!days) days = 0;
+  if (!hours) hours = 0;
+  if (!minutes) minutes = 0;
+
+  return `C'est dans ${days !== 0 && `${days} jours,`} ${hours !== 0 &&
     `${hours} heures et`} ${minutes && `${minutes} minutes`}`;
 }
 
@@ -65,12 +69,10 @@ app.post("/webhook", (req, res) => {
   console.log(req.body);
   if (req.body.object === "page") {
     req.body.entry.forEach(entry => {
-      console.log("entry", entry);
       entry.messaging.forEach(event => {
-        console.log("event", event);
         if (event.message && event.message.text) {
           if (new RegExp(weekEnd.join("|")).test(event.message.text)) {
-            sendMessage(event.sender.id, `C'est dans ${getNextFriday()}`);
+            sendMessage(event.sender.id, getNextFriday());
           }
         }
       });
