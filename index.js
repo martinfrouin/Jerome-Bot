@@ -22,14 +22,16 @@ function getNextFriday() {
 
   var deadline;
 
-  if (moment().isoWeekday() <= dayINeed) {
+  if (moment().isoWeekday() === 6 || moment().isoWeekday() === 7)
+    return `C'est le week-end !`;
+  else if (moment().isoWeekday() <= dayINeed) {
     deadline = moment().isoWeekday(dayINeed);
   } else {
     deadline = moment()
       .add(1, "weeks")
       .isoWeekday(dayINeed);
   }
-  deadline.startOf("day").set({ h: 17 });
+  deadline.startOf("day").set({ h: 18 });
   const now = moment();
   let days = deadline.diff(now, "days");
   let hours = deadline.subtract(days, "days").diff(now, "hours");
@@ -40,7 +42,7 @@ function getNextFriday() {
 
   return `C'est dans ${days ? `${days} jours, ` : ""}${
     hours ? `${hours} heures et` : ""
-  } ${`${minutes} minutes`}`;
+  } ${`${minutes} minutes.`}`;
 }
 
 /* For Facebook Validation */
