@@ -44,12 +44,13 @@ function getNextFriday() {
   let days = deadline.diff(now, "days");
   let hours = deadline.subtract(days, "days").diff(now, "hours");
   let minutes = deadline.subtract(hours, "hours").diff(now, "minutes");
-  if (!days) days = false;
-  if (!hours) hours = false;
+  if (!days) days = 0;
+  if (!hours) hours = 0;
   if (!minutes) minutes = 0;
 
-  return `C'est dans ${days && `${days} jours,`} ${hours &&
-    `${hours} heures et`} ${minutes && `${minutes} minutes`}`;
+  return `C'est dans ${days ? `${days} jours,` : ""} ${
+    hours ? `${hours} heures et` : ""
+  } ${`${minutes} minutes`}`;
 }
 
 /* For Facebook Validation */
