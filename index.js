@@ -28,7 +28,7 @@ const server = app.listen(process.env.PORT || 5000, () => {
 });
 
 function getNextFriday() {
-  var dayINeed = 4;
+  var dayINeed = 5;
 
   var deadline;
 
