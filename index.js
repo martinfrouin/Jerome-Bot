@@ -21,9 +21,7 @@ const server = app.listen(process.env.PORT || 5000, () => {
 })
 
 function getNextWeekend() {
-  const now = moment()
-    .add(5, 'days')
-    .locale('fr')
+  const now = moment().locale('fr')
 
   const deadlineFrom = moment()
     .isoWeekday(5)
