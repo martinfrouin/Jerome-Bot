@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 console.log(process.env.VERIFY_TOKEN, process.env.PAGE_ACCESS_TOKEN)
 const weekEnd = ['weekend', 'we', 'week end', 'week-end']
+const weekEnd = ['hello', 'salut', 'bonjour', 'coucou']
 
 const server = app.listen(process.env.PORT || 5000, () => {
   console.log(
@@ -20,7 +21,9 @@ const server = app.listen(process.env.PORT || 5000, () => {
 })
 
 function getNextWeekend() {
-  const now = moment().locale('fr')
+  const now = moment()
+    .add(5, 'days')
+    .locale('fr')
 
   const deadlineFrom = moment()
     .isoWeekday(5)
@@ -32,7 +35,7 @@ function getNextWeekend() {
 
   if (now >= deadlineFrom && now <= deadlineTo)
     return `C'est le week-end !\nhttps://www.youtube.com/watch?v=Meb7uaNlcS0`
-  else return `C'est ${deadlineFrom.from(now)}`
+  return `C'est ${deadlineFrom.from(now)}`
 }
 
 /* For Facebook Validation */
@@ -56,9 +59,12 @@ app.post('/webhook', (req, res) => {
         if (event.message && event.message.text) {
           if (
             new RegExp(weekEnd.join('|')).test(event.message.text.toLowerCase())
-          ) {
+          )
             sendMessage(event.sender.id, getNextWeekend())
-          }
+          else if (
+            new RegExp(hello.join('|')).test(event.message.text.toLowerCase())
+          )
+            sendMessage(event.sender.id, `Salut`)
         }
       })
     })
