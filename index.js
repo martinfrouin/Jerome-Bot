@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 console.log(process.env.VERIFY_TOKEN, process.env.PAGE_ACCESS_TOKEN)
 const weekEnd = ['weekend', 'we', 'week end', 'week-end']
-const weekEnd = ['hello', 'salut', 'bonjour', 'coucou']
+const hello = ['hello', 'salut', 'bonjour', 'coucou']
 
 const server = app.listen(process.env.PORT || 5000, () => {
   console.log(
