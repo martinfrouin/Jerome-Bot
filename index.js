@@ -54,6 +54,7 @@ app.post('/webhook', (req, res) => {
   if (req.body.object === 'page') {
     req.body.entry.forEach(entry => {
       entry.messaging.forEach(event => {
+        console.log('event', event)
         if (event.message && event.message.text) {
           if (
             new RegExp(weekEnd.join('|')).test(event.message.text.toLowerCase())
